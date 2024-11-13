@@ -1,0 +1,9 @@
+curl -X POST "http://localhost:8000/predict" \
+     -H "Content-Type: application/json" \
+     -d '{
+          "goals": 3,
+          "appearance": 104,
+          "minutes_played": 9390,
+          "highest_value": 70000000,
+          "award": 13
+         }'
