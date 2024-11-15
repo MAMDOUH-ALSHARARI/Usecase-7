@@ -14,8 +14,7 @@ award = st.number_input("Player award : ", step=1)
 # Prediction button
 if st.button("Predict Category"):
         # API request URL
-        url = "https://football-players-transfer.onrender.com/DBSCAN_Football_Players/predict"
-        
+        url = "https://usecase-7-2-5npk.onrender.com/DBSCAN_Football_Players/predict"
         # Data for the POST request
         data = {
 
