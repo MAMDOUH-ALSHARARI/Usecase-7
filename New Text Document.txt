@@ -1,0 +1,68 @@
+from selenium import webdriver
+from bs4 import BeautifulSoup
+import pandas as pd
+from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.chrome.service import Service # Import Service
+
+# Initialize the WebDriver using ChromeDriverManager and Service to ensure compatibility
+# The ChromeDriverManager().install() returns the path to the chromedriver executable.
+# We need to pass this path to the Service object, which is then passed to the webdriver.Chrome constructor.
+driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
+
+# Set the base URL
+url = 'httpssyarah.comfilterscondition_id=0'
+
+# Define the columns for the DataFrame
+columns_ = ['Names', 'Prices', 'Car Status', 'Old Prices']
+df = pd.DataFrame(columns=columns_)
+
+# Loop through pages (2 to 5 in this case)
+for i in range(0, 6)
+    # Request the page
+    driver.get(url)
+
+    # Extract the page source and parse it with BeautifulSoup
+    soup = BeautifulSoup(driver.page_source, html.parser)
+
+    # Extract prices, car names, old prices, and car status
+    prices = soup.find_all('strong', {'class' interActiveGreen})
+    names = soup.find_all('h2', {'class' CardBody-module__title interActiveGray})
+    old_prices = soup.find_all('strong', {'class' interActiveGray})  # Adjust based on specific class
+    car_status = soup.find_all('span', {'class' CardFooter-module__tag})  # Example based on element provided
+
+   
+    car_status_simplified = []
+    for cs in car_status
+        if 'مستعملة' in cs.text.lower()
+            car_status_simplified.append('used')
+        else
+            car_status_simplified.append('new')
+
+    # Clean up each field
+    clean_prices = [p.text for p in prices]
+    clean_names = [n.text for n in names]
+    clean_old_prices = [op.text for op in old_prices]
+
+    # Ensure lists are the same length by filling missing data if needed
+    max_length = max(len(clean_prices), len(clean_names), len(clean_old_prices), len(car_status_simplified))
+    clean_prices += ['NA']  (max_length - len(clean_prices))
+    clean_names += ['NA']  (max_length - len(clean_names))
+    clean_old_prices += ['NA']  (max_length - len(clean_old_prices))
+    car_status_simplified += ['NA']  (max_length - len(car_status_simplified))
+
+    # Store them in a DataFrame
+    new_rows_df = pd.DataFrame({
+        'Names' clean_names,
+        'Prices' clean_prices,
+        'Car Status' car_status_simplified,  # Use the simplified car status
+        'Old Prices' clean_old_prices
+    })
+
+    # Concatenate the new rows to the main DataFrame
+    df = pd.concat([df, new_rows_df], ignore_index=True)
+
+    # Prepare new link for the next page
+    url = fhttpssyarah.comfilterscondition_id=0&page={i}
+
+# Quit the WebDriver after the loop completes
+driver.quit()
