@@ -3,6 +3,11 @@ import joblib
 from pydantic import BaseModel
 from fastapi import FastAPI
 
+import pandas as pd
+
+from sklearn.preprocessing import StandardScaler
+from sklearn.cluster import DBSCAN
+
 ##################################################################################
 
 DBSCAN_model = joblib.load('DBSCAN_model.joblib')
@@ -22,16 +27,25 @@ def preprocessing(input_features: InputFeatures):
     dict_f = {
         'minutes played': input_features.minutes_played,
         'current_value':input_features.current_value,
-        'award': input_features.award,
+        'award': input_features.award
     }
+    # Get the feature names the scaler was trained on
+    feature_names = DBSCAN_scaler.get_feature_names_out() 
+
+    # Ensure new_data has the same columns and order as the original data
+    new_data = dict_f.reindex(columns=feature_names) # Reorder or add missing columns
+
+    # 3. Scale the new data using the loaded scaler
+    new_data_scaled = DBSCAN_scaler.transform(new_data)
+    
 
     # Convert dictionary values to a list in the correct order
-    features_list = [dict_f[key] for key in (dict_f)]
+    #features_list = [dict_f[key] for key in (dict_f)]
 
     # Scale the input features
-    scaled_features = DBSCAN_scaler.transform([list(dict_f.values())])
+    #scaled_features = DBSCAN_scaler.transform([list(dict_f.values())])
 
-    return scaled_features
+    return new_data_scaled
 
 ##################################################################################
 
